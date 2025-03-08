@@ -9,9 +9,17 @@ def start_collecting():
     finished_read = True
     while finished_read:
         value_read = _get_new_read()
-        with open('sound_level.txt', 'w') as sound_file:
-             sound_file.write(str(value_read))
-             sound_file.close()
+        save_data(value_read)
+
+def _process_stream_data(indata, frames, time, status):
+    volume = np.linalg.norm(indata) * 10
+    save_data(volume)
+
+def save_data(reading):
+    with open('sound_level.txt', 'w') as sound_file:
+        sound_file.write(str(reading))
+        sound_file.close()
+
 
 def _get_new_read():
     """Capture audio and return decibel level."""
@@ -32,4 +40,6 @@ def _get_new_read():
 
 if __name__ == "__main__":
     start_collecting()
+#    with sd.InputStream(callback=_process_stream_data):
+#        sd.sleep(500)
 

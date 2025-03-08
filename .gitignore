@@ -1,2 +1,4 @@
 VENV
 __pycache__
+sound_pid.txt
+sound_level.txt
