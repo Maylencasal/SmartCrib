@@ -1,0 +1,114 @@
+    <html>
+    <head>
+        <script>
+            function updateSound() {
+                fetch('/api/sound')  // Fetch JSON from API
+                    .then(response => response.json())
+                    .then(data => {
+                        let decibels = data.decibels;
+                        document.getElementById("db").innerText = decibels.toFixed(1) + " dB";
+
+                        let message = "";
+                        let background = "#ffffff";  // Default white
+                        let messageColor = "#333";  // Dark gray for main message
+                        let dbColor = "#777";  // Slightly lighter gray
+                        let warningBox = document.getElementById("warning");
+                        let warningText = document.getElementById("warning-text");
+                        let warningLight = document.getElementById("warning-light");
+
+                        // Determine UI state based on decibel levels
+                        if (decibels <= 8) {
+                            message = "Baby is resting";
+                            background = "#E3EAFD";  // White
+                            messageColor = "#00008b";  // Dark gray
+                            dbColor = "#6495ed";  // Slightly lighter gray
+                            warningBox.style.display = "none";
+                        } else if (decibels > 9 && decibels <= 16) {
+                            message = "Baby is starting to get a little restless";
+                            background = "#FFF3CD";  // Soft yellow
+                            messageColor = "#A87C00";  // Darker yellow for message
+                            dbColor = "#C89E2A";  // Muted dark yellow
+                            warningBox.style.display = "none";
+                        } else {
+                            message = "Baby is very restless!";
+                            background = "#F8D7DA";  // Soft red
+                            messageColor = "#FFFFFF";  // White message
+                            dbColor = "#B21C1C";  // Dark red decibel text
+                            warningBox.style.display = "inline-flex";
+                            warningText.innerText = "🚨 Check in on the baby!";
+                            warningLight.className = "blinking alert-light";
+                        }
+
+                        document.getElementById("message").innerText = message;
+                        document.getElementById("message").style.color = messageColor;
+                        document.getElementById("db").style.color = dbColor;
+                        document.body.style.backgroundColor = background;
+                    });
+            }
+            setInterval(updateSound, 1000);  // Refresh every second
+        </script>
+        <style>
+            body {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                text-align: center;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                transition: background-color 0.5s ease;
+            }
+            .sound-level {
+                font-size: 10vw;
+                font-weight: 600;
+                margin-bottom: 10px;
+                transition: color 0.5s ease;
+            }
+            .message {
+                font-size: 5vw;
+                font-weight: bold;
+                margin-bottom: 20px;
+                transition: color 0.5s ease;
+            }
+            .warning-box {
+                margin-top: 30px;
+                font-size: 4vw;
+                padding: 15px 20px;
+                border-radius: 15px;
+                text-align: center;
+                font-weight: bold;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                background-color: white;
+                color: black;
+                width: 80%;
+                box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+                position: relative;
+            }
+            .blinking {
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                margin-right: 10px;
+                animation: blink 1s infinite alternate;
+            }
+            .alert-light {
+                background-color: red;
+            }
+            @keyframes blink {
+                0% { opacity: 1; }
+                100% { opacity: 0.3; }
+            }
+        </style>
+    </head>
+    <body onload="updateSound()">
+        <div class="message" id="message">Loading...</div>
+        <div class="sound-level" id="db">Loading...</div>
+        <div class="warning-box" id="warning">
+            <div class="blinking" id="warning-light"></div>
+            <span id="warning-text"></span>
+        </div>
+    </body>
+    </html>
+ 

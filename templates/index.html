@@ -1,0 +1,208 @@
+    <html>
+    <head>
+        <script>
+            function updateData() {
+                // Fetch Sound Data
+                fetch('/api/sound')
+                    .then(response => response.json())
+                    .then(data => {
+                        let decibels = data.decibels;
+                        document.getElementById("db").innerText = decibels.toFixed(1) + " dB";
+
+                        let soundMessage = "";
+                        let soundBackground = "#ffffff";  // Default: White
+                        let soundText = "#333";  
+                        let soundDbText = "#777";  
+                        let soundWarning = document.getElementById("sound-warning");
+                        let soundWarningText = document.getElementById("sound-warning-text");
+                        let soundWarningLight = document.getElementById("sound-warning-light");
+
+                        // Determine sound state
+                        if (decibels <= 8) {
+                            soundMessage = "Baby is resting";
+                            soundBackground = "#E3EAFD";  // Light blue/purple ONLY inside the box
+                            soundText = "#00008b";  
+                            soundDbText = "#6495ed";  
+                            soundWarning.style.display = "none";
+                        } else if (decibels > 9 && decibels <= 16) {
+                            soundMessage = "Baby is starting to get restless";
+                            soundBackground = "#FFF3CD";  // Soft yellow
+                            soundText = "#A87C00";  
+                            soundDbText = "#C89E2A";  
+                            soundWarning.style.display = "none";
+                        } else {
+                            soundMessage = "Baby is very restless!";
+                            soundBackground = "#F8D7DA";  // Soft red
+                            soundText = "#FFFFFF";  
+                            soundDbText = "#B21C1C";  
+                            soundWarning.style.display = "inline-flex";
+                            soundWarningText.innerText = "🚨 Check in on the baby!";
+                            soundWarningLight.className = "blinking alert-light";
+                        }
+
+                        document.getElementById("sound-message").innerText = soundMessage;
+                        document.getElementById("sound-message").style.color = soundText;
+                        document.getElementById("db").style.color = soundDbText;
+                        document.getElementById("sound-box").style.backgroundColor = soundBackground;
+                    });
+
+                // Fetch Temperature Data
+                fetch('/api/temperature')
+                    .then(response => response.json())
+                    .then(data => {
+                        let tempC = data.temp_c;
+                        let tempF = data.temp_f;
+                        document.getElementById("temp-f").innerText = tempF.toFixed(1) + "°F";
+                        document.getElementById("temp-c").innerText = tempC.toFixed(1) + "°C";
+
+                        let tempMessage = "";
+                        let tempBackground = "#ffffff";  // Default: White
+                        let tempText = "#333";  
+                        let tempWarning = document.getElementById("temp-warning");
+                        let tempWarningText = document.getElementById("temp-warning-text");
+                        let tempWarningLight = document.getElementById("temp-warning-light");
+
+                        // Determine temp state
+                        if (tempF > 75) {
+                            tempMessage = "⚠️ Too Hot! Adjust temp.";
+                            tempBackground = "#FFD6D6";  
+                            tempText = "#B21C1C";  
+                            tempWarning.style.display = "inline-flex";
+                            tempWarningText.innerText = "🚨 Too Hot!";
+                            tempWarningLight.className = "blinking alert-light";
+                        } else if (tempF < 65) {
+                            tempMessage = "❄️ Too Cold! Adjust temp.";
+                            tempBackground = "#D6E5FF";  
+                            tempText = "#0057B2";  
+                            tempWarning.style.display = "inline-flex";
+                            tempWarningText.innerText = "❄️ Too Cold!";
+                            tempWarningLight.className = "blinking cold-light";
+                        } else {
+                            tempMessage = "Temperature is stable";
+                            tempBackground = "#ffffff";  
+                            tempText = "#333";  
+                            tempWarning.style.display = "none";
+                        }
+
+                        document.getElementById("temp-message").innerText = tempMessage;
+                        document.getElementById("temp-message").style.color = tempText;
+                        document.getElementById("temp-box").style.backgroundColor = tempBackground;
+                    });
+            }
+
+            setInterval(updateData, 1000);
+        </script>
+
+        <style>
+            body {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                text-align: center;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                background-color: #ffffff; /* Keeps app background WHITE */
+            }
+            .title {
+                font-size: 6vw;
+                font-weight: bold;
+                margin-bottom: 20px;
+            }
+            .container {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                width: 80%;
+                max-width: 600px;
+            }
+            .box {
+                padding: 20px;
+                border-radius: 20px;
+                box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+                transition: background-color 0.5s ease;
+                background-color: #ffffff; /* Default WHITE inside boxes */
+            }
+            .message {
+                font-size: 4vw;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+            .data {
+                font-size: 6vw;
+                font-weight: 600;
+            }
+            .warning-box {
+                margin-top: 10px;
+                font-size: 3vw;
+                padding: 10px;
+                border-radius: 10px;
+                text-align: center;
+                font-weight: bold;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                background-color: white;
+                color: black;
+                width: 90%;
+                box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            }
+            .blinking {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                margin-right: 10px;
+                animation: blink 1s infinite alternate;
+            }
+            .alert-light {
+                background-color: red;
+            }
+            .cold-light {
+                background-color: blue;
+            }
+            .nav {
+                margin-top: 20px;
+                font-size: 4vw;
+            }
+            .nav a {
+                color: #555;
+                text-decoration: none;
+                margin: 10px;
+                font-weight: bold;
+            }
+            .nav a:hover {
+                text-decoration: underline;
+            }
+            @keyframes blink {
+                0% { opacity: 1; }
+                100% { opacity: 0.3; }
+            }
+        </style>
+    </head>
+    <body onload="updateData()">
+        <div class="title">NESTSENSE</div>
+        <div class="container">
+            <div class="box" id="sound-box">
+                <div class="message" id="sound-message">Loading...</div>
+                <div class="data" id="db">Loading...</div>
+                <div class="warning-box" id="sound-warning">
+                    <div class="blinking" id="sound-warning-light"></div>
+                    <span id="sound-warning-text"></span>
+                </div>
+            </div>
+            <div class="box" id="temp-box">
+                <div class="message" id="temp-message">Loading...</div>
+                <div class="data" id="temp-f">Loading...</div>
+                <div class="data" id="temp-c">Loading...</div>
+                <div class="warning-box" id="temp-warning">
+                    <div class="blinking" id="temp-warning-light"></div>
+                    <span id="temp-warning-text"></span>
+                </div>
+            </div>
+        </div>
+        <div class="nav">
+            <a href="/sound">View Sound</a> | <a href="/temperature">View Temperature</a>
+        </div>
+    </body>
+    </html>
+
