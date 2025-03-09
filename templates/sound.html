@@ -23,13 +23,13 @@
                             messageColor = "#00008b";  // Dark gray
                             dbColor = "#6495ed";  // Slightly lighter gray
                             warningBox.style.display = "none";
-                        } else if (decibels > 9 && decibels <= 16) {
+                        } else if (decibels > 8 && decibels <= 16) {
                             message = "Baby is starting to get a little restless";
                             background = "#FFF3CD";  // Soft yellow
                             messageColor = "#A87C00";  // Darker yellow for message
                             dbColor = "#C89E2A";  // Muted dark yellow
                             warningBox.style.display = "none";
-                        } else {
+                        } else if (decibels > 16) {
                             message = "Baby is very restless!";
                             background = "#F8D7DA";  // Soft red
                             messageColor = "#FFFFFF";  // White message

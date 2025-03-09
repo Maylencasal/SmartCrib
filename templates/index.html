@@ -24,13 +24,13 @@
                             soundText = "#00008b";  
                             soundDbText = "#6495ed";  
                             soundWarning.style.display = "none";
-                        } else if (decibels > 9 && decibels <= 16) {
+                        } else if (decibels > 8 && decibels <= 16) {
                             soundMessage = "Baby is starting to get restless";
                             soundBackground = "#FFF3CD";  // Soft yellow
                             soundText = "#A87C00";  
                             soundDbText = "#C89E2A";  
                             soundWarning.style.display = "none";
-                        } else {
+                        } else if (decibels > 16) {
                             soundMessage = "Baby is very restless!";
                             soundBackground = "#F8D7DA";  // Soft red
                             soundText = "#FFFFFF";  
@@ -108,6 +108,13 @@
                 font-size: 6vw;
                 font-weight: bold;
                 margin-bottom: 20px;
+                position: fixed;   /* ✅ Sticks to the top */
+                top: 0;            /* ✅ Aligns to the top */
+                width: 100%;
+                background: white; /* ✅ Keeps it readable */
+                padding: 15px 0;
+                text-align: center;
+                z-index: 1000;     /* ✅ Ensures it stays above content */
             }
             .container {
                 display: flex;
@@ -122,6 +129,21 @@
                 box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
                 transition: background-color 0.5s ease;
                 background-color: #ffffff; /* Default WHITE inside boxes */
+                
+                /* ✅ Center content inside box */
+                display: flex;
+                flex-direction: column;
+                justify-content: center; /* ✅ Centers vertically */
+                align-items: center; /* ✅ Centers horizontally */
+                text-align: center;
+            }
+            .container {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                width: 80%;
+                max-width: 600px;
+                padding-top: 100px; /* ✅ Pushes boxes down */
             }
             .message {
                 font-size: 4vw;
@@ -180,7 +202,7 @@
         </style>
     </head>
     <body onload="updateData()">
-        <div class="title">NESTSENSE</div>
+        <div class="title">NestSense</div>
         <div class="container">
             <div class="box" id="sound-box">
                 <div class="message" id="sound-message">Loading...</div>
@@ -205,4 +227,3 @@
         </div>
     </body>
     </html>
-
