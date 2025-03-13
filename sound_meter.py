@@ -2,44 +2,46 @@ import sounddevice as sd
 import numpy as np
 import time
 
-SAMPLE_RATE = 16000  # Lower sample rate for stability
-DURATION = 0.5  # Sample duration in seconds
+# ✅ Adjusted for I2S microphone
+SAMPLE_RATE = 48000
+DEVICE = "hw:1,0"
+DURATION = 0.5  # ✅ Keep the same duration
+BASELINE_DB = 75  # ✅ Makes 75 dB → 0 dB
+AMPLIFICATION_FACTOR = 3.0  # ✅ Increase to enhance small variations
 
-def start_collecting():
-    finished_read = True
-    while finished_read:
-        value_read = _get_new_read()
-        save_data(value_read)
-
-def _process_stream_data(indata, frames, time, status):
-    volume = np.linalg.norm(indata) * 10
-    save_data(volume)
-
-def save_data(reading):
-    with open('sound_level.txt', 'w') as sound_file:
-        sound_file.write(str(reading))
-        sound_file.close()
-
-
-def _get_new_read():
-    """Capture audio and return decibel level."""
+def get_decibel_level():
+    """Capture audio and calculate adjusted decibel level."""
     try:
-        audio_data = sd.rec(int(SAMPLE_RATE * DURATION), samplerate=SAMPLE_RATE, channels=1, dtype='float32')
+        audio_data = sd.rec(int(SAMPLE_RATE * DURATION), samplerate=SAMPLE_RATE,
+                            channels=1, dtype='int32', device=DEVICE)
         sd.wait()
 
-        # Calculate RMS volume
-        rms_value = np.sqrt(np.mean(audio_data**2))
+        # ✅ Normalize 32-bit integer to float (-1 to 1)
+        audio_data = audio_data.astype(np.float32) / np.iinfo(np.int32).max
 
-        # Convert to dB
-        decibels = 20 * np.log10(rms_value + 1e-6)  # Avoid log(0)
-        return round(decibels + 30, 2)  # Normalize to 0 dB baseline
+        # ✅ Compute RMS (Root Mean Square) value
+        rms_value = np.sqrt(np.mean(audio_data ** 2))
+
+        # ✅ Convert to decibels
+        decibels = 20 * np.log10(rms_value + 1e-6)
+
+        # ✅ Adjust the dB scale so 75 dB → 0 dB and amplify variations
+        adjusted_db = (decibels + 100 - BASELINE_DB) * AMPLIFICATION_FACTOR
+
+        return round(adjusted_db, 2)
+
     except Exception as e:
-        #print(f"Sound Error: {e}")
-        return -1  # Return -1 if error
+        print(f"I2S Audio Error: {e}")
+        return -1  # Return -1 if an error occurs
 
+def continuously_update_sound_level():
+    """Continuously update sound_level.txt with the latest decibel level."""
+    while True:
+        sound_level = get_decibel_level()
+        with open("sound_level.txt", "w") as sound_file:
+            sound_file.write(str(sound_level))  # ✅ Write to file
+        time.sleep(1)  # ✅ Update every second
 
 if __name__ == "__main__":
-    start_collecting()
-#    with sd.InputStream(callback=_process_stream_data):
-#        sd.sleep(500)
-
+    print("🔊 Continuously updating sound_level.txt... (Press CTRL+C to stop)")
+    continuously_update_sound_level()

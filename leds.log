@@ -1,0 +1,1 @@
+/home/baby/SmartCrib/run_leds.sh: line 2:  4341 Killed                  sudo /home/baby/SmartCrib/VENV/bin/python3 /home/baby/SmartCrib/led_strip.py

@@ -17,13 +17,13 @@
                         let warningLight = document.getElementById("warning-light");
 
                         // Determine UI state based on decibel levels
-                        if (decibels <= 8) {
+                        if (decibels <= 2) {
                             message = "Baby is resting";
                             background = "#E3EAFD";  // White
                             messageColor = "#00008b";  // Dark gray
                             dbColor = "#6495ed";  // Slightly lighter gray
                             warningBox.style.display = "none";
-                        } else if (decibels > 8 && decibels <= 16) {
+                        } else if (decibels > 2 && decibels <= 16) {
                             message = "Baby is starting to get a little restless";
                             background = "#FFF3CD";  // Soft yellow
                             messageColor = "#A87C00";  // Darker yellow for message

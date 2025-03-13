@@ -18,13 +18,13 @@
                         let soundWarningLight = document.getElementById("sound-warning-light");
 
                         // Determine sound state
-                        if (decibels <= 8) {
+                        if (decibels <= 2) {
                             soundMessage = "Baby is resting";
                             soundBackground = "#E3EAFD";  // Light blue/purple ONLY inside the box
                             soundText = "#00008b";  
                             soundDbText = "#6495ed";  
                             soundWarning.style.display = "none";
-                        } else if (decibels > 8 && decibels <= 16) {
+                        } else if (decibels > 2 && decibels <= 16) {
                             soundMessage = "Baby is starting to get restless";
                             soundBackground = "#FFF3CD";  // Soft yellow
                             soundText = "#A87C00";  

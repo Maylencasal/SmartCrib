@@ -1,3 +1,5 @@
+import board
+import neopixel
 from flask import Flask, jsonify, render_template
 import subprocess
 
@@ -17,11 +19,17 @@ def monitor_page():
 
 @app.route("/api/sound")
 def api_get_sound_level():
-    """Return the latest sound level in JSON format."""
-    #db_level = sound_meter.get_decibel_level()
-    with open('sound_level.txt') as sound_level:
-        db_level = sound_level.read()
-    return jsonify({"decibels": float(db_level)})  # Convert float32 to float
+    """Return the latest sound level in JSON format & update LEDs."""
+    try:
+        with open("sound_level.txt") as sound_level:
+            db_level = float(sound_level.read())  # Convert to float
+
+        update_leds(db_level)  # Update LEDs based on sound
+
+        return jsonify({"decibels": db_level})  # Send JSON response
+
+    except Exception as e:
+        return jsonify({"error": str(e)})  # Error handling
 
 @app.route("/sound")
 def get_sound_level():
@@ -64,6 +72,25 @@ def api_get_temperature():
         return jsonify({"temp_c": temp_c, "temp_f": temp_f})
     except Exception as e:  # 🔹 Make sure this line exists
         return jsonify({"error": str(e)})  # 🔹 This was missing, 
+
+# LED Setup
+LED_PIN = board.D12  # GPIO12
+NUM_LEDS = 60
+BRIGHTNESS = 0.5
+pixels = neopixel.NeoPixel(LED_PIN, NUM_LEDS, brightness=BRIGHTNESS, auto_write=False)
+
+def update_leds(db_level):
+    """Update LEDs based on sound level"""
+    if db_level <= 2:
+        color = (255, 255, 255)  # White
+    elif 2 < db_level <= 16:
+        color = (255, 255, 0)  # Yellow
+    else:
+        color = (255, 0, 0)  # Red (Flashing)
+    
+    pixels.fill(color)
+    pixels.show()
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
